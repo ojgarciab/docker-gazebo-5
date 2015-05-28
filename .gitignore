@@ -1,0 +1,3 @@
+# Avoid upload generated Dockerfile file
+Dockerfile
+
