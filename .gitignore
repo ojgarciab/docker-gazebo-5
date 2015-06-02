@@ -1,3 +1,6 @@
+# gedit temporary files
+*~
+
 # Avoid upload generated Dockerfile file
 Dockerfile
 

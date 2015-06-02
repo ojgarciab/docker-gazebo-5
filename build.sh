@@ -1,7 +1,19 @@
 #! /bin/bash
 
-# Load image name from command line
-[ -z "$1" ] && IMAGE_NAME="gazebo-5" || IMAGE_NAME="$1"
+# Load image name from config file
+CONFIG_FILE="docker-gazebo-5.conf"
+if [ -f "$CONFIG_FILE" ]
+then
+    source "$CONFIG_FILE"
+    if [ -z "$IMAGE_NAME" ]
+    then
+        echo "ERROR: 'IMAGE_NAME' not defined in config file '$CONFIG_FILE'"
+        exit 1
+    fi
+else
+    echo "ERROR: configuration file '$CONFIG_FILE' couldn't be read"
+    exit 1
+fi
 
 # Generate Dockerfile from template
 sed -e "s#{USER}#${USER/\#/\\\#}#g" \
@@ -15,12 +27,11 @@ echo "Building '$IMAGE_NAME' image"
 docker build -t "$IMAGE_NAME" .
 
 # Was image created successfully?
-if [ $? -eq 0 ]
+if [ $? -ne 0 ]
 then
-    echo -e "Done!\nList available images with 'docker images'"
-    exit 0
-else
     echo 'Build failed!'
     exit 1
 fi
+  
+echo -e "Done!\nList available images with 'docker images'"
 
