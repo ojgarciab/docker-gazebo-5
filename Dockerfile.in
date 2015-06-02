@@ -1,0 +1,43 @@
+FROM ubuntu:14.04
+MAINTAINER github/ojgarciab
+
+# Based on http://gernotklingler.com/blog/docker-replaced-virtual-machines-chroots/
+
+# Change repositories to spanish (optional)
+RUN sed -i 's/\/archive\.ubuntu\.com/\/es.archive.ubuntu.com/g' /etc/apt/sources.list
+
+# Install wget, needed for download repository keys
+RUN apt-get update && apt-get install -y wget
+
+# Add Gazebo repositories
+RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu $(lsb_release -cs) main" \
+    > /etc/apt/sources.list.d/gazebo-latest.list
+RUN wget 'http://packages.osrfoundation.org/gazebo.key' -O - | apt-key add -
+
+# Update packages
+RUN apt-get update
+
+# Use the "noninteractive" debconf frontend
+ENV DEBIAN_FRONTEND noninteractive
+
+# ===== create user/setup environment =====
+# Replace 1000 with your user/group id
+RUN mkdir -p /home/{USER} && \
+    echo "{USER}:x:{UID}:{UID}:{USER},,,:{HOME}:/bin/bash" >> /etc/passwd && \
+    echo "{USER}:x:{GID}:" >> /etc/group && \
+    echo "{USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/{USER} && \
+    chmod 0440 /etc/sudoers.d/{USER} && \
+    chown {USER}:{USER} -R /home/{USER}
+
+# ===== Install additional packages =====
+RUN apt-get -y install bash-completion git build-essential vim
+
+# ===== install OpenGL utilities and Gazebo 5 =====
+RUN apt-get install -y binutils mesa-utils gazebo5 libgazebo5-dev
+
+# some QT-Apps/Gazebo don't not show controls without this
+ENV QT_X11_NO_MITSHM 1
+
+ENV HOME {HOME}
+ENV USER {USER}
+USER {USER}
