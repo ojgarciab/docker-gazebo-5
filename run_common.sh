@@ -15,17 +15,10 @@ else
     exit 1
 fi
 
-PARAMETERS="--privileged --rm=true -e DISPLAY -u redstar -w /home/redstar -it"
-
-# Add nvidia related character devices
-while read -r device
-do
-	PARAMETERS="$PARAMETERS --device='$device:$device:rw'"
-done < <(find /dev -type c -iname "nvidia*")
+PARAMETERS="--privileged --rm=true -e DISPLAY -u $USER -w $HOME -it"
 
 # Add graphics related directories
-for directory in /dev/dri /tmp/.X11-unix /run/shm "$HOME"
+for path in /dev /tmp/.X11-unix /run/shm "$HOME"
 do
-	[ -d "$directory" ] && PARAMETERS="$PARAMETERS -v='$directory:$directory:rw'"
+	[ -d "$path" ] && PARAMETERS="$PARAMETERS -v='$path:$path:rw'"
 done
-
