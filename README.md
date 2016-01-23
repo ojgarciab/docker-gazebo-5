@@ -32,4 +32,4 @@ You can install and try gazebo without installing it and its dependent packages 
 
 ## TODO
 
-* Integrate Gazebo with JdeRobot opening necesary ports.
+* Integrate Gazebo with JdeRobot mapping required ports.
